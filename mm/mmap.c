@@ -2402,23 +2402,8 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 	info.flags = VM_UNMAPPED_AREA_TOPDOWN;
 	info.length = len;
 	info.low_limit = max(PAGE_SIZE, mmap_min_addr);
-#if defined(VENDOR_EDIT) && defined(CONFIG_VIRTUAL_RESERVE_MEMORY)
-	/* Kui.Zhang@TEC.Kernel.Performance, 2019/03/27,
-	 * create reserved area must be below the gpu high limit addr
-	 */
-	if (check_reserve_mmap_doing(mm)) {
-		info.high_limit = (gpu_compat_high_limit_addr < mm->mmap_base) ?
-			gpu_compat_high_limit_addr : mm->mmap_base;
-		info.align_offset = 0;
-		info.align_mask = SZ_2M - 1;
-	} else {
-		info.high_limit = mm->mmap_base;
-		info.align_mask = 0;
-	}
-#else
 	info.high_limit = mm->mmap_base;
 	info.align_mask = 0;
-#endif
 	info.align_offset = 0;
 	addr = vm_unmapped_area(&info);
 
